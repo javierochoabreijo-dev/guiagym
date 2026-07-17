@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Visual · Plan 2 Días</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ECEFE9;
+    --card:#FFFFFF;
+    --ink:#171A1E;
+    --muted:#6E7570;
+    --accent:#2645F5;
+    --line:#D9DED6;
+    --grid:#E4EAF8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,-apple-system,sans-serif;
+    padding:20px 14px 48px;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+  header{margin-bottom:18px}
+  .eyebrow{
+    font-size:11px;font-weight:700;letter-spacing:.18em;
+    color:var(--accent);text-transform:uppercase;margin-bottom:6px;
+  }
+  h1{font-weight:900;font-size:clamp(26px,6vw,40px);line-height:1.02;letter-spacing:-.01em;text-transform:uppercase}
+  .sub{color:var(--muted);font-size:13.5px;margin-top:8px;font-weight:500;line-height:1.45}
+  .tabs{
+    display:flex;gap:8px;margin:18px 0 20px;
+    background:var(--card);border:1px solid var(--line);
+    padding:6px;border-radius:14px;position:sticky;top:8px;z-index:5;
+    box-shadow:0 2px 10px rgba(23,26,30,.05);
+  }
+  .tab{
+    flex:1;border:none;background:transparent;cursor:pointer;
+    font-family:inherit;font-weight:900;font-size:15px;letter-spacing:.06em;
+    padding:12px 8px;border-radius:10px;color:var(--muted);
+    text-transform:uppercase;transition:all .15s;
+  }
+  .tab small{display:block;font-weight:600;font-size:10px;letter-spacing:.12em;margin-top:2px}
+  .tab.active{background:var(--accent);color:#fff}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+  .exCard{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    overflow:hidden;display:none;
+  }
+  .exCard.show{display:block}
+  .panel{
+    position:relative;cursor:pointer;
+    background:
+      repeating-linear-gradient(0deg,transparent 0 21px,var(--grid) 21px 22px),
+      repeating-linear-gradient(90deg,transparent 0 21px,var(--grid) 21px 22px),
+      #FBFCFA;
+    border-bottom:1px solid var(--line);
+  }
+  .panel svg{display:block;width:100%;aspect-ratio:16/9;height:auto}
+  .panel video{display:none;width:100%;aspect-ratio:16/9;object-fit:cover;background:#FBFCFA}
+  .panel img.still{display:none;width:100%;aspect-ratio:16/9;object-fit:cover;background:#F4F6F1}
+  .exCard.hasVideo .panel svg{display:none}
+  .exCard.hasVideo .panel video{display:block}
+  .exCard.hasImage .panel svg{display:none}
+  .exCard.hasImage .panel img.still{display:block}
+  .num{
+    position:absolute;top:10px;left:12px;z-index:2;
+    font-weight:900;font-size:13px;color:var(--accent);
+    letter-spacing:.08em;
+    background:rgba(255,255,255,.9);padding:2px 8px;border-radius:8px;
+    box-shadow:0 1px 4px rgba(23,26,30,.12);
+  }
+  .pauseTag{
+    position:absolute;bottom:8px;right:10px;font-size:10px;font-weight:700;
+    letter-spacing:.12em;color:var(--muted);text-transform:uppercase;opacity:0;
+    transition:opacity .2s;
+  }
+  .exCard.paused .pauseTag{opacity:1}
+  .body{padding:14px 16px 16px}
+  .target{
+    font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--accent);
+    text-transform:uppercase;margin-bottom:4px;
+  }
+  h3{font-weight:900;font-size:18px;line-height:1.1;letter-spacing:-.01em}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+  .chip{
+    font-size:11.5px;font-weight:700;letter-spacing:.03em;
+    border:1.5px solid var(--ink);border-radius:999px;padding:4px 10px;
+  }
+  .chip.acc{background:var(--ink);color:#fff}
+  .cue{display:flex;gap:8px;font-size:13px;line-height:1.45;color:#2A2E33;margin-bottom:7px;font-weight:500}
+  .cue::before{content:"→";color:var(--accent);font-weight:900;flex-shrink:0}
+  .err{
+    margin-top:10px;font-size:12.5px;line-height:1.4;font-weight:600;
+    background:#FDF1EF;border-left:3px solid #D0442E;color:#8A2C1D;
+    padding:8px 10px;border-radius:0 8px 8px 0;
+  }
+  .err b{text-transform:uppercase;font-size:10px;letter-spacing:.12em;display:block;margin-bottom:2px}
+  .foot{display:grid;grid-template-columns:1fr;gap:10px;margin-top:24px}
+  @media(min-width:640px){.foot{grid-template-columns:1fr 1fr 1fr}}
+  .fCard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .fCard h4{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+  .fCard p{font-size:12.5px;line-height:1.45;color:#2A2E33;font-weight:500}
+  .guide{animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.25}50%{opacity:.85}}
+  @media(prefers-reduced-motion:reduce){.guide{animation:none;opacity:.5}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Plan de recomposición · Javi</div>
+    <h1>Guía visual<br>de ejercicios</h1>
+    <p class="sub">Full body · 2 días/semana. Las figuras muestran el recorrido completo de cada movimiento. <b>Toca una tarjeta para pausar.</b> La técnica fina se pule con peso liviano en las semanas 1-2 (RIR 3-4).</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-day="A">Día A<small>7 ejercicios</small></button>
+    <button class="tab" data-day="B">Día B<small>7 ejercicios</small></button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="foot">
+    <div class="fCard"><h4>RIR 2</h4><p>Terminas cada serie pudiendo hacer solo 2 repeticiones más. Si podrías hacer 5, el peso está liviano.</p></div>
+    <div class="fCard"><h4>Progresión</h4><p>Cuando completes el tope de reps en TODAS las series con RIR 2, sube el peso y vuelve al rango bajo.</p></div>
+    <div class="fCard"><h4>Descansos</h4><p>2-3 min en básicos (prensa, press, jalón, remo) · 60-90 s en aislamiento y core.</p></div>
+  </div>
+</div>
+
+<script>
+const D = Math.PI/180;
+const INK = "#171A1E", LIGHT = "#B9C0BA", ACC = "#2645F5";
+const pt = (o,a,l)=>({x:o.x+l*Math.sin(a*D), y:o.y+l*Math.cos(a*D)});
+const r1 = n=>Math.round(n*10)/10;
+const L=(a,b,w=5.5,c=INK,extra="")=>`<line x1="${r1(a.x)}" y1="${r1(a.y)}" x2="${r1(b.x)}" y2="${r1(b.y)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" ${extra}/>`;
+const C=(p,r,fill="#FBFCFA",sw=4,sc=INK)=>`<circle cx="${r1(p.x)}" cy="${r1(p.y)}" r="${r}" fill="${fill}" stroke="${sc}" stroke-width="${sw}"/>`;
+const dash=(a,b,c="#8A9190")=>`<line x1="${r1(a.x)}" y1="${r1(a.y)}" x2="${r1(b.x)}" y2="${r1(b.y)}" stroke="${c}" stroke-width="2.5" stroke-dasharray="5 5" stroke-linecap="round"/>`;
+const floor=(y,x1=22,x2=198)=>`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#AEB6AF" stroke-width="3" stroke-linecap="round"/>`;
+// dumbbell: bar + plates
+const db=(w,ang=90)=>{const p1=pt(w,ang,9),p2=pt(w,ang,-9);
+  return L(p1,p2,3.5)+C(p1,5.5,INK,0)+C(p2,5.5,INK,0);};
+// dumbbell seen end-on
+const dbEnd=w=>C(w,7,INK,0)+C(w,2.6,"#FBFCFA",0);
+
+function lerpPose(a,b,t){
+  const o={};
+  for(const k in a){
+    if(k==="hip") o.hip={x:a.hip.x+(b.hip.x-a.hip.x)*t, y:a.hip.y+(b.hip.y-a.hip.y)*t};
+    else if(typeof a[k]==="number") o[k]=a[k]+(b[k]-a[k])*t;
+    else o[k]=a[k];
+  }
+  return o;
+}
+
+function sideJoints(p){
+  const hip=p.hip;
+  const shoulder=pt(hip,p.torso,60);
+  const head=pt(shoulder,p.torso,15);
+  const elbow=pt(shoulder,p.uarm,32), wrist=pt(elbow,p.farm,30);
+  const knee=pt(hip,p.thigh,38), ankle=pt(knee,p.shin,38);
+  const gA=p.gArm??10, gL=p.gLeg??-7;
+  const gElbow=pt(shoulder,p.uarm+gA,32), gWrist=pt(gElbow,p.farm+gA,30);
+  const gKnee=pt(hip,p.thigh+gL,38), gAnkle=pt(gKnee,p.shin+gL,38);
+  return {hip,shoulder,head,elbow,wrist,knee,ankle,gElbow,gWrist,gKnee,gAnkle};
+}
+
+function drawSide(p,eq){
+  const j=sideJoints(p);
+  const E=eq?eq(j,p):{back:"",front:""};
+  let s=E.back||"";
+  if(!p.noGhost){
+    s+=L(j.hip,j.gKnee,5.5,LIGHT)+L(j.gKnee,j.gAnkle,5.5,LIGHT);
+    if(!p.noArms) s+=L(j.shoulder,j.gElbow,5.5,LIGHT)+L(j.gElbow,j.gWrist,5.5,LIGHT);
+  }
+  s+=L(j.hip,j.knee)+L(j.knee,j.ankle);
+  s+=L(j.hip,j.shoulder,6.5);
+  if(!p.noArms) s+=L(j.shoulder,j.elbow)+L(j.elbow,j.wrist);
+  s+=C(j.head,8.5);
+  s+=E.front||"";
+  return s;
+}
+
+// front view (elevaciones laterales) — explicit, mirrored
+function drawLateral(p){
+  const a=p.abd;
+  const shR={x:126,y:94}, shL={x:94,y:94};
+  const eR=pt(shR,a,30), wR=pt(eR,a-6,26);
+  const eL={x:shL.x-(eR.x-shR.x), y:eR.y}, wL={x:shL.x-(wR.x-shR.x), y:wR.y};
+  let s="";
+  s+=floor(200);
+  s+=L({x:103,y:150},{x:100,y:199})+L({x:117,y:150},{x:120,y:199}); // piernas
+  s+=L({x:103,y:150},{x:117,y:150},6.5); // cadera
+  s+=L({x:110,y:150},{x:110,y:92},6.5); // columna
+  s+=L(shL,shR,6.5); // hombros
+  s+=L(shR,eR)+L(eR,wR)+L(shL,eL)+L(eL,wL);
+  s+=C({x:110,y:76},8.5);
+  s+=dbEnd(wR)+dbEnd(wL);
+  return s;
+}
+
+/* ================= EQUIPOS ================= */
+const eqPrensa=(j,p)=>({
+  back:
+    dash({x:112,y:152},{x:186,y:78})+
+    L({x:100,y:166},{x:44,y:108},9,"#C6CCC5")+   // respaldo
+    L({x:100,y:166},{x:72,y:186},9,"#C6CCC5")+   // asiento
+    floor(192),
+  front:(()=>{ // plataforma perpendicular a la pierna
+    const c=pt(j.ankle,p.shin,12), perp=p.shin+90;
+    return L(pt(c,perp,22),pt(c,perp,-22),7,"#3A3F45");
+  })()
+});
+const eqBanca=(j)=>({
+  back:
+    `<rect x="54" y="150" width="110" height="10" rx="4" fill="#C6CCC5"/>`+
+    L({x:66,y:160},{x:66,y:198},5,"#C6CCC5")+L({x:150,y:160},{x:150,y:198},5,"#C6CCC5")+
+    floor(200),
+  front: dbEnd(j.wrist)+dbEnd(j.gWrist)
+});
+const eqRemo=(j)=>({
+  back:
+    L({x:196,y:58},{x:196,y:150},7,"#C6CCC5")+
+    L({x:182,y:150},{x:198,y:150},7,"#C6CCC5")+
+    L({x:66,y:158},{x:106,y:158},8,"#C6CCC5")+
+    L({x:86,y:158},{x:86,y:188},5,"#C6CCC5")+
+    floor(190),
+  front:
+    dash(j.wrist,{x:194,y:96})+
+    L(pt(j.wrist,0,7),pt(j.wrist,0,-7),4,"#3A3F45")
+});
+const eqMilitar=(j)=>({
+  back:
+    L({x:88,y:152},{x:88,y:84},8,"#C6CCC5")+
+    L({x:80,y:154},{x:122,y:154},8,"#C6CCC5")+
+    L({x:100,y:154},{x:100,y:194},5,"#C6CCC5")+
+    floor(196),
+  front: db(j.wrist,90)+db(j.gWrist,90)
+});
+const eqFemoral=(j,p)=>({
+  back:
+    L({x:64,y:150},{x:106,y:150},8,"#C6CCC5")+
+    L({x:74,y:81},{x:74,y:150},8,"#C6CCC5")+
+    L({x:86,y:150},{x:86,y:188},5,"#C6CCC5")+
+    floor(190),
+  front:(()=>{
+    const mid=pt({x:(j.hip.x+j.knee.x)/2,y:(j.hip.y+j.knee.y)/2},180,11);
+    const roll=pt(j.ankle,p.shin,8);
+    return `<rect x="${r1(mid.x-12)}" y="${r1(mid.y-4)}" width="24" height="8" rx="4" fill="#3A3F45"/>`+
+      C(roll,6,"#3A3F45",0);
+  })()
+});
+const eqPlancha=(j)=>({
+  back: floor(170),
+  front:
+    L(j.elbow,j.wrist,7)+ // antebrazo apoyado
+    L(j.ankle,{x:41,y:170},5)+ // punta de pie
+    `<line x1="${r1(j.head.x)}" y1="${r1(j.head.y-14)}" x2="${r1(j.ankle.x)}" y2="${r1(j.ankle.y-12)}" stroke="${ACC}" stroke-width="2.5" stroke-dasharray="6 6" class="guide"/>`
+});
+const eqGoblet=(j)=>({
+  back: floor(200),
+  front:(()=>{const w=j.wrist;
+    return L(pt(w,180,8),pt(w,0,8),3.5)+C(pt(w,180,8),5.5,INK,0)+C(pt(w,0,8),5.5,INK,0);})()
+});
+const eqJalon=(j)=>({
+  back:
+    `<rect x="98" y="2" width="24" height="6" rx="2" fill="#C6CCC5"/>`+
+    L({x:80,y:160},{x:120,y:160},8,"#C6CCC5")+
+    L({x:100,y:160},{x:100,y:192},5,"#C6CCC5")+
+    floor(194),
+  front:(()=>{
+    const bar=L(pt(j.wrist,68,16),pt(j.wrist,68,-16),4,"#3A3F45");
+    return dash(j.wrist,{x:110,y:6})+bar;
+  })()
+});
+const eqInclinado=(j)=>({
+  back:
+    L({x:152,y:166},{x:84,y:124},10,"#C6CCC5")+
+    L({x:100,y:136},{x:100,y:210},5,"#C6CCC5")+
+    L({x:146,y:166},{x:146,y:210},5,"#C6CCC5")+
+    floor(212),
+  front: dbEnd(j.wrist)+dbEnd(j.gWrist)
+});
+const eqRumano=(j)=>({
+  back: floor(200),
+  front: db(j.wrist,90)+db(j.gWrist,90)
+});
+const eqPajaros=(j)=>({
+  back: floor(205),
+  front: dbEnd(j.wrist)+dbEnd(j.gWrist)
+});
+const eqCurl=(j)=>({
+  back: floor(200),
+  front: db(j.wrist,90)+db(j.gWrist,90)
+});
+const eqCrunch=(j,p)=>({
+  back: floor(196),
+  front:(()=>{
+    const mid={x:j.hip.x+(j.shoulder.x-j.hip.x)*0.62, y:j.hip.y+(j.shoulder.y-j.hip.y)*0.62};
+    const chest=pt(mid,p.torso-90,10);
+    return L(j.shoulder,chest,5)+C(chest,7,INK,0)+C(chest,2.6,"#FBFCFA",0);
+  })()
+});
+
+/* ================= EJERCICIOS ================= */
+const EX=[
+ // ---------- DÍA A ----------
+ {day:"A",name:"Prensa de pierna",target:"Cuádriceps · Glúteo",chips:["3 × 8-10","RIR 2","2-3 min"],
+  cues:["Baja hasta que las rodillas se acerquen al pecho, sin despegar la cadera del asiento.","Empuja con todo el pie (talón incluido), no solo con la punta."],
+  err:"Bloquear las rodillas de golpe al extender.",
+  type:"side",eq:eqPrensa,
+  p1:{hip:{x:92,y:150},torso:228,uarm:55,farm:10,thigh:160,shin:80,gArm:0,gLeg:6},
+  p2:{hip:{x:92,y:150},torso:228,uarm:55,farm:10,thigh:125,shin:118,gArm:0,gLeg:6}},
+
+ {day:"A",name:"Press banca con mancuernas",target:"Pecho · Tríceps",chips:["3 × 8-10","RIR 2","2-3 min"],
+  cues:["Escápulas atrás y abajo, pies firmes en el piso.","Baja en 2 seg hasta la altura del pecho, codos a ~45° del torso."],
+  err:"Rebotar abajo o chocar las mancuernas arriba.",
+  type:"side",eq:eqBanca,
+  p1:{hip:{x:140,y:142},torso:270,uarm:100,farm:172,thigh:55,shin:8,gArm:8,gLeg:0},
+  p2:{hip:{x:140,y:142},torso:270,uarm:178,farm:178,thigh:55,shin:8,gArm:8,gLeg:0}},
+
+ {day:"A",name:"Remo en máquina",target:"Espalda · Bíceps",chips:["3 × 10-12","RIR 2","2 min"],
+  cues:["Pecho erguido: tira con la espalda, codos pegados al cuerpo.","Lleva el agarre al abdomen y aprieta las escápulas 1 seg."],
+  err:"Impulsarte columpiando el torso hacia atrás.",
+  type:"side",eq:eqRemo,
+  p1:{hip:{x:86,y:148},torso:186,uarm:96,farm:92,thigh:82,shin:28,gArm:6,gLeg:0},
+  p2:{hip:{x:86,y:148},torso:176,uarm:352,farm:78,thigh:82,shin:28,gArm:6,gLeg:0}},
+
+ {day:"A",name:"Press militar sentado",target:"Hombro",chips:["3 × 8-10","RIR 2","2 min"],
+  cues:["Core apretado y espalda apoyada en el respaldo.","Sube hasta extender sin bloquear; baja hasta la altura de las orejas."],
+  err:"Arquear la zona lumbar para empujar más peso.",
+  type:"side",eq:eqMilitar,
+  p1:{hip:{x:100,y:146},torso:182,uarm:28,farm:172,thigh:84,shin:12,gArm:9,gLeg:0},
+  p2:{hip:{x:100,y:146},torso:182,uarm:176,farm:178,thigh:84,shin:12,gArm:9,gLeg:0}},
+
+ {day:"A",name:"Curl femoral en máquina",target:"Femoral",chips:["3 × 10-12","RIR 2","90 s"],
+  cues:["Rodilla alineada con el eje de giro de la máquina.","Baja controlado en 2-3 seg — ahí está la ganancia."],
+  err:"Dejar que el peso caiga de regreso sin frenarlo.",
+  type:"side",eq:eqFemoral,
+  p1:{hip:{x:88,y:140},torso:192,uarm:20,farm:40,thigh:88,shin:92,gArm:0,gLeg:0},
+  p2:{hip:{x:88,y:140},torso:192,uarm:20,farm:40,thigh:88,shin:8,gArm:0,gLeg:0}},
+
+ {day:"A",name:"Elevaciones laterales",target:"Hombro lateral",chips:["3 × 12-15","RIR 1-2","60 s"],
+  cues:["Sube guiando con los codos, no con las manos, hasta la horizontal.","Hombros lejos de las orejas; torso quieto."],
+  err:"Usar impulso y subir por encima del hombro.",
+  type:"front",
+  p1:{abd:12},p2:{abd:86}},
+
+ {day:"A",name:"Plancha",target:"Core",chips:["3 × 30-45 s","—","60 s"],
+  cues:["Línea recta de cabeza a talones: glúteo y abdomen apretados.","Codos justo debajo de los hombros; respira normal."],
+  err:"Dejar caer la cadera o subirla en pico.",
+  type:"side",eq:eqPlancha,noAnim:true,
+  p1:{hip:{x:112,y:146},torso:104,uarm:8,farm:96,thigh:288,shin:282,gArm:0,gLeg:3},
+  p2:{hip:{x:112,y:146},torso:104,uarm:8,farm:96,thigh:288,shin:282,gArm:0,gLeg:3}},
+
+ // ---------- DÍA B ----------
+ {day:"B",name:"Sentadilla goblet",target:"Cuádriceps · Glúteo",chips:["3 × 8-10","RIR 2","2-3 min"],
+  cues:["Mancuerna pegada al pecho; al bajar, los codos van entre las rodillas.","Baja hasta romper la paralela con los talones firmes en el piso."],
+  err:"Redondear la espalda baja o despegar los talones.",
+  type:"side",eq:eqGoblet,
+  p1:{hip:{x:104,y:122},torso:174,uarm:22,farm:208,thigh:6,shin:-4,gArm:0,gLeg:-6},
+  p2:{hip:{x:90,y:146},torso:150,uarm:30,farm:220,thigh:62,shin:-29,gArm:0,gLeg:-6}},
+
+ {day:"B",name:"Jalón al pecho",target:"Espalda · Dorsal",chips:["3 × 8-10","RIR 2","2-3 min"],
+  cues:["Pecho arriba: lleva la barra hacia la clavícula guiando con los codos.","Arriba, deja estirar los dorsales sin encoger los hombros."],
+  err:"Recostarte hacia atrás y jalar solo con los brazos.",
+  type:"side",eq:eqJalon,
+  p1:{hip:{x:100,y:150},torso:182,uarm:172,farm:176,thigh:84,shin:16,gArm:6,gLeg:0},
+  p2:{hip:{x:100,y:150},torso:190,uarm:336,farm:148,thigh:84,shin:16,gArm:6,gLeg:0}},
+
+ {day:"B",name:"Press inclinado con mancuernas",target:"Pecho superior",chips:["3 × 8-10","RIR 2","2-3 min"],
+  cues:["Banco a 30-40°; escápulas atrás y abajo antes de empezar.","Baja a la parte alta del pecho, codos a ~45°."],
+  err:"Arquear tanto que se convierte en press plano.",
+  type:"side",eq:eqInclinado,
+  p1:{hip:{x:142,y:152},torso:234,uarm:55,farm:165,thigh:52,shin:0,gArm:8,gLeg:0},
+  p2:{hip:{x:142,y:152},torso:234,uarm:172,farm:174,thigh:52,shin:0,gArm:8,gLeg:0}},
+
+ {day:"B",name:"Peso muerto rumano",target:"Femoral · Glúteo",chips:["3 × 10-12","RIR 2","2 min"],
+  cues:["Cadera hacia atrás con la espalda recta; rodillas semiflexionadas y fijas.","Mancuernas rozando las piernas; sube apretando el glúteo."],
+  err:"Doblar las rodillas y convertirlo en sentadilla.",
+  type:"side",eq:eqRumano,
+  p1:{hip:{x:104,y:124},torso:178,uarm:4,farm:4,thigh:2,shin:0,gArm:8,gLeg:-5},
+  p2:{hip:{x:92.8,y:126},torso:145,uarm:-10,farm:-10,thigh:14,shin:5,gArm:8,gLeg:-5}},
+
+ {day:"B",name:"Pájaros (deltoides posterior)",target:"Hombro posterior",chips:["3 × 12-15","RIR 1-2","60 s"],
+  cues:["Torso inclinado ~45°: abre los brazos hacia afuera hasta la horizontal.","Codos con flexión ligera y fija durante todo el recorrido."],
+  err:"Levantar el torso para ayudarte con impulso.",
+  type:"side",eq:eqPajaros,
+  p1:{hip:{x:98,y:128},torso:122,uarm:6,farm:6,thigh:12,shin:-4,gArm:10,gLeg:-6},
+  p2:{hip:{x:98,y:128},torso:122,uarm:-78,farm:-85,thigh:12,shin:-4,gArm:10,gLeg:-6}},
+
+ {day:"B",name:"Curl bíceps + ext. tríceps",target:"Brazo (superserie)",chips:["3 × 10-12","RIR 1-2","60 s"],
+  cues:["Codos fijos al costado del cuerpo; sube sin balancearte.","Al terminar el curl, pasa directo a la extensión de tríceps sin descanso."],
+  err:"Columpiar el cuerpo por usar peso excesivo.",
+  type:"side",eq:eqCurl,
+  p1:{hip:{x:104,y:124},torso:180,uarm:6,farm:8,thigh:3,shin:-2,gArm:5,gLeg:-5},
+  p2:{hip:{x:104,y:124},torso:180,uarm:6,farm:155,thigh:3,shin:-2,gArm:5,gLeg:-5}},
+
+ {day:"B",name:"Crunch con peso",target:"Core",chips:["3 × 12-15","—","60 s"],
+  cues:["Disco al pecho: despega solo la parte alta de la espalda.","Exhala al subir y aprieta 1 seg arriba."],
+  err:"Jalarte del cuello o subir completo tipo sit-up.",
+  type:"side",eq:eqCrunch,noArms:true,
+  p1:{hip:{x:100,y:186},torso:268,uarm:0,farm:0,thigh:130,shin:30,gLeg:-4,noArms:1},
+  p2:{hip:{x:100,y:186},torso:243,uarm:0,farm:0,thigh:130,shin:30,gLeg:-4,noArms:1}}
+];
+
+/* ================= RENDER ================= */
+const grid=document.getElementById("grid");
+const cards=[];
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+EX.forEach((ex,i)=>{
+  const card=document.createElement("div");
+  card.className="exCard"+(ex.day==="A"?" show":"");
+  card.innerHTML=`
+    <div class="panel">
+      <div class="num">${ex.day}${(EX.filter(e=>e.day===ex.day).indexOf(ex))+1}</div>
+      <video muted loop playsinline preload="metadata"></video>
+      <img class="still" alt="">
+      <svg viewBox="0 0 391 220" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="pauseTag">⏸ pausado</div>
+    </div>
+    <div class="body">
+      <div class="target">${ex.target}</div>
+      <h3>${ex.name}</h3>
+      <div class="chips">${ex.chips.filter(c=>c!=="—").map((c,k)=>`<span class="chip${k===0?" acc":""}">${c}</span>`).join("")}</div>
+      ${ex.cues.map(c=>`<div class="cue">${c}</div>`).join("")}
+      <div class="err"><b>Error común</b>${ex.err}</div>
+    </div>`;
+  grid.appendChild(card);
+  const svg=card.querySelector("svg");
+  const state={ex,card,svg,paused:false,phase:i*0.9,visible:true,t:reduce?1:0};
+  // cascada de medios: videos/a1.mp4 → imagenes/a1.png|jpg|jpeg|webp → animación SVG
+  const code=(ex.day+(EX.filter(e=>e.day===ex.day).indexOf(ex)+1)).toLowerCase();
+  const vid=card.querySelector("video");
+  const img=card.querySelector("img.still");
+  const tryImage=(exts)=>{
+    if(!exts.length){img.remove();return;}
+    img.onerror=()=>tryImage(exts.slice(1));
+    img.src="imagenes/"+code+"."+exts[0];
+  };
+  img.onload=()=>card.classList.add("hasImage");
+  vid.addEventListener("loadeddata",()=>{
+    card.classList.add("hasVideo");
+    img.remove();
+    if(card.classList.contains("show"))vid.play().catch(()=>{});
+  });
+  vid.addEventListener("error",()=>{
+    vid.remove();
+    tryImage(["png","jpg","jpeg","webp"]);
+  });
+  vid.src="videos/"+code+".mp4";
+  card.querySelector(".panel").addEventListener("click",()=>{
+    if(card.classList.contains("hasVideo")){
+      vid.paused?vid.play():vid.pause();
+      card.classList.toggle("paused",vid.paused);
+      return;
+    }
+    if(card.classList.contains("hasImage"))return;
+    if(reduce){state.t=state.t>0.5?0:1;draw(state);return;}
+    state.paused=!state.paused;
+    card.classList.toggle("paused",state.paused);
+  });
+  cards.push(state);
+});
+
+function draw(st){
+  const {ex}=st;
+  let inner="";
+  if(ex.type==="front"){
+    inner=drawLateral(lerpPose(ex.p1,ex.p2,st.t));
+  } else {
+    const p=lerpPose(ex.p1,ex.p2,st.t);
+    if(ex.noArms||p.noArms)p.noArms=true;
+    inner=drawSide(p,ex.eq);
+  }
+  st.svg.innerHTML='<g transform="translate(85,0)">'+inner+'</g>';
+}
+
+// visibilidad para no animar fuera de pantalla
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    const st=cards.find(c=>c.card===e.target);
+    if(st) st.visible=e.isIntersecting;
+  });
+},{rootMargin:"80px"});
+cards.forEach(c=>io.observe(c.card));
+
+function loop(now){
+  cards.forEach(st=>{
+    if(!st.card.classList.contains("show")||!st.visible)return;
+    if(st.card.classList.contains("hasVideo")||st.card.classList.contains("hasImage"))return; // el medio reemplaza la animación
+    if(!st.ex.noAnim&&!st.paused&&!reduce){
+      st.t=(1+Math.sin(now*0.0021+st.phase))/2;
+    }
+    draw(st);
+  });
+  requestAnimationFrame(loop);
+}
+cards.forEach(draw);
+if(!reduce)requestAnimationFrame(loop);
+
+// tabs
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const day=btn.dataset.day;
+    cards.forEach(st=>{
+      st.card.classList.toggle("show",st.ex.day===day);
+      const v=st.card.querySelector("video");
+      if(v&&st.card.classList.contains("hasVideo")){
+        st.ex.day===day ? v.play().catch(()=>{}) : v.pause();
+      }
+      if(st.ex.day===day)draw(st);
+    });
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+</script>
+</body>
+</html>
