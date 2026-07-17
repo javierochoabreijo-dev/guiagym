@@ -418,7 +418,7 @@ EX.forEach((ex,i)=>{
   card.innerHTML=`
     <div class="panel">
       <div class="num">${ex.day}${(EX.filter(e=>e.day===ex.day).indexOf(ex))+1}</div>
-      <video muted loop playsinline preload="metadata"></video>
+      <video muted loop playsinline webkit-playsinline preload="auto"></video>
       <img class="still" alt="">
       <svg viewBox="0 0 391 220" preserveAspectRatio="xMidYMid meet"></svg>
       <div class="pauseTag">⏸ pausado</div>
@@ -437,22 +437,30 @@ EX.forEach((ex,i)=>{
   const code=(ex.day+(EX.filter(e=>e.day===ex.day).indexOf(ex)+1)).toLowerCase();
   const vid=card.querySelector("video");
   const img=card.querySelector("img.still");
+  let resolved=false; // evita que se dupliquen las transiciones
+  const useVideo=()=>{
+    if(resolved)return; resolved=true;
+    card.classList.add("hasVideo");
+    if(img)img.remove();
+    if(card.classList.contains("show"))vid.play().catch(()=>{});
+  };
   const tryImage=(exts)=>{
+    if(resolved)return;
     if(!exts.length){img.remove();return;}
     img.onerror=()=>tryImage(exts.slice(1));
+    img.onload=()=>{ if(!resolved){resolved=true; card.classList.add("hasImage");} };
     img.src="imagenes/"+code+"."+exts[0];
   };
-  img.onload=()=>card.classList.add("hasImage");
-  vid.addEventListener("loadeddata",()=>{
-    card.classList.add("hasVideo");
-    img.remove();
-    if(card.classList.contains("show"))vid.play().catch(()=>{});
-  });
+  // Safari/iPhone a veces no dispara loadeddata con preload=metadata:
+  // escuchamos varios eventos y el primero que llegue gana.
+  ["loadeddata","loadedmetadata","canplay"].forEach(ev=>vid.addEventListener(ev,useVideo));
   vid.addEventListener("error",()=>{
-    vid.remove();
-    tryImage(["png","jpg","jpeg","webp"]);
+    if(!resolved){vid.remove();tryImage(["png","jpg","jpeg","webp"]);}
   });
   vid.src="videos/"+code+".mp4";
+  vid.load(); // fuerza a Safari a empezar a cargar y disparar los eventos
+  // red de seguridad: si en 2.5 s el video no cargó ni dio error, probamos imagen
+  setTimeout(()=>{ if(!resolved){ vid.remove(); tryImage(["png","jpg","jpeg","webp"]); } },2500);
   card.querySelector(".panel").addEventListener("click",()=>{
     if(card.classList.contains("hasVideo")){
       vid.paused?vid.play():vid.pause();
